@@ -1,5 +1,7 @@
-﻿
-@page "/books"
+﻿@page "/books"
+@attribute [Authorize(BookStorePermissions.Books.Default)]
+@using BookStore.Permissions
+@using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.Application.Dtos
 @using BookStore.Books
 @using BookStore.Localization
@@ -36,11 +38,13 @@
                         <EntityActions TItem="BookDto" EntityActionsColumn="@EntityActionsColumn">
                             <EntityAction TItem="BookDto"
                                           Text="@L["Edit"]"
+                                          Visible=HasUpdatePermission
                                           Clicked="() => OpenEditModalAsync(context)" />
                             <EntityAction TItem="BookDto"
                                           Text="@L["Delete"]"
+                                          Visible=HasDeletePermission
                                           Clicked="() => DeleteEntityAsync(context)"
-                                          ConfirmationMessage="() => GetDeleteConfirmationMessage(context)" />
+                                          ConfirmationMessage="()=>GetDeleteConfirmationMessage(context)" />
                         </EntityActions>
                     </DisplayTemplate>
                 </DataGridEntityActionsColumn>
@@ -51,7 +55,7 @@
                                 Field="@nameof(BookDto.Type)"
                                 Caption="@L["Type"]">
                     <DisplayTemplate>
-                        @L[$"{context.Type}"]
+                        @L[$"Enum:BookType.{context.Type}"]
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridColumn TItem="BookDto"
@@ -103,7 +107,7 @@
                             @foreach (int bookTypeValue in Enum.GetValues(typeof(BookType)))
                             {
                                 <SelectItem TValue="BookType" Value="@((BookType) bookTypeValue)">
-                                    @L[$"{(BookType)bookTypeValue}"]
+                                    @L[$"Enum:BookType.{bookTypeValue}"]
                                 </SelectItem>
                             }
                         </Select>
@@ -155,7 +159,7 @@
                             @foreach (int bookTypeValue in Enum.GetValues(typeof(BookType)))
                             {
                                 <SelectItem TValue="BookType" Value="@((BookType) bookTypeValue)">
-                                    @L[$"{(BookType)bookTypeValue}"]
+                                    @L[$"Enum:BookType.{bookTypeValue}"]
                                 </SelectItem>
                             }
                         </Select>
@@ -182,6 +186,19 @@
     </ModalContent>
 </Modal>
 
-@code {
-
+@code
+{
+    public Books() // Constructor
+    {
+        CreatePolicyName = BookStorePermissions.Books.Create;
+        UpdatePolicyName = BookStorePermissions.Books.Edit;
+        DeletePolicyName = BookStorePermissions.Books.Delete;
+    }
+}
+@if (HasCreatePermission)
+{
+    <Button Color="Color.Primary"
+            Clicked="OpenCreateModalAsync">
+        @L["NewBook"]
+    </Button>
 }

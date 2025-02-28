@@ -33,48 +33,40 @@ public class BookStoreMenuContributor : IMenuContributor
         {
             await ConfigureUserMenuAsync(context);
         }
+
     }
 
-    private static async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+    private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var l = context.GetLocalizer<BookStoreResource>();
-        
-        //Administration
-        var administration = context.Menu.GetAdministration();
-        administration.Order = 5;
 
-        context.Menu.AddItem(new ApplicationMenuItem(
-            BookStoreMenus.Home,
-            l["Menu:Home"],
-            "/",
-            icon: "fas fa-home",
-            order: 1
-        ));
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
-
-        administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
-        administration.SetSubItemOrder(SettingManagementMenus.GroupName, 3);
-
-        context.Menu.AddItem(
+        context.Menu.Items.Insert(
+            0,
             new ApplicationMenuItem(
-                "BooksStore",
-                l["Menu:BookStore"],
-                icon: "fa fa-book"
-            ).AddItem(
-                new ApplicationMenuItem(
-                    "BooksStore.Books",
-                    l["Menu:Books"],
-                    url: "/books"
-                )
+                "BookStore.Home",
+                l["Menu:Home"],
+                "/",
+                icon: "fas fa-home"
             )
         );
+
+        var bookStoreMenu = new ApplicationMenuItem(
+            "BooksStore",
+            l["Menu:BookStore"],
+            icon: "fa fa-book"
+        );
+
+        context.Menu.AddItem(bookStoreMenu);
+
+        //CHECK the PERMISSION
+        if (await context.IsGrantedAsync(BookStorePermissions.Books.Default))
+        {
+            bookStoreMenu.AddItem(new ApplicationMenuItem(
+                "BooksStore.Books",
+                l["Menu:Books"],
+                url: "/books"
+            ));
+        }
     }
 
     private async Task ConfigureUserMenuAsync(MenuConfigurationContext context)
