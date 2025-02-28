@@ -26,7 +26,7 @@
     "Enum:BookType.5": "Horror",
     "Enum:BookType.6": "Science",
     "Enum:BookType.7": "Science fiction",
-    "Enum:BookType.8": "Poetry",
+    "Enum:BookType.8": "Poetry"
   },
   "Permission:BookStore": "Book Store",
   "Permission:Books": "Book Management",
@@ -46,5 +46,7 @@
   "BirthDate": "Birth date",
   "NewAuthor": "New author",
 
-  "BookStore:00001": "There is already an author with the same name: {name}"
+  "BookStore:00001": "There is already an author with the same name: {name}",
+
+  "AnAuthorIsRequiredForCreatingBook": "An author is required to create a book"
 }
